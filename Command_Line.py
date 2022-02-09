@@ -6,10 +6,14 @@
 import pandas as pd
 from datetime import date
 import datetime
+import os
+
+os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
 
 print("Welcome to the Earthquake History. We are a database containing information "
       "about all significant (> 6.5 magnitude) earthquakes since 1970")
-
+print("All earthquake data is sourced directly from the USGS Earthquake Database")
+print(" ")
 print("How would you like to start?")
 
 def options():
@@ -23,7 +27,7 @@ def options():
 
 def past_earthquake_option():
     print("Input your city, state, or country (if outside the US) to search for past earthquakes, ")
-    location = input("or input the number 2 to return to the main menu: ")
+    location = input("or input 'back' to return to the main menu: ")
     if location == '2':
         options()
     df = pd.read_csv("r_quakes.csv")
@@ -36,7 +40,7 @@ def past_earthquake_option():
             print(city_df.head())
     else:
         print("There have been no recorded earthquakes greater than 6.5 magnitude in ",location," since the year 1970")
-        next_action = input("Enter a 1 to enter a different location, enter a 2 to return to the main menu: ")
+        next_action = input("Enter a 1 to enter a different location, enter 'back' to return to the main menu: ")
         if next_action == "1":
             past_earthquake_option()
         else:
@@ -48,15 +52,27 @@ def recent_sig_option():
     start_date = (datetime.datetime.now() - datetime.timedelta(30)).date()
     thirty_days = df[(df['date']> str(start_date))]
     print("There were",len(thirty_days), "earthquakes of over 6.5 magnitude within the last thirty days.")
-    print(thirty_days.head())
-
-    print("Would you like to get more information about any of these earthquakes?")
-
-    #prompt user to type in the city/region
-    #will need a back button option to get back to this page
+    print(" ")
+    earthquake_rough_details(thirty_days, 0, None)
 
 
-def earthquake_details():
+def earthquake_rough_details(df, criteria, location):
+    if criteria == 0:
+        print("Here is some information about those earthquakes")
+        print(" ")
+    if criteria == 1:
+        print("The following large earthquakes occurred near", location, "since the year 1970")
+    for row in range(len(df)):
+        print(row+1,'. Date:',df.iloc[row]['date'],'Magnitude:',df.iloc[row]['magnitude'], "Location:", df.iloc[row]['place'])
+    print(" ")
+    print("Would you like to learn more about any of these earthquakes?")
+    print("Enter the number next to the earthquake to get more information about that specific event, or "
+          "enter 'back' to return to the main menu.")
+
+    #add user input
+
+def earthquake_in_depth(quake):
+
     pass
 
 def earthquake_map():
