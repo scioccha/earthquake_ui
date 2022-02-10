@@ -20,12 +20,12 @@ def wiki_connect(search_term, section, subsection = None):
 
         return page_py.summary #if section is not found, prints page summary
     else:
-        return "Wikipedia Pages Does Not Exist. Please Refine Search Terms"
+        return "There is no Wikipedia Page that matches your search terms."
 
 
 from sys import argv
 if __name__ == "__main__":
-    print(wiki_connect(argv[1], argv[2], argv[3]))
+    print(wiki_connect(argv[1], argv[2]))
 
 
 #example command line usage:
