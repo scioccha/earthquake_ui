@@ -4,11 +4,10 @@
 
 
 import pandas as pd
-from datetime import date
 import datetime
 import os
 
-os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
+#os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
 
 print("Welcome to the Earthquake History. We are a database containing information "
       "about all significant (> 6.5 magnitude) earthquakes since 1970")
@@ -16,21 +15,27 @@ print("All earthquake data is sourced directly from the USGS Earthquake Database
 print(" ")
 print("How would you like to start?")
 
-def options():
+def start():
     print("1. Search for past earthquakes in my region")
     print("2. Learn about recent significant earthquakes around the world")
+    print("3. Exit App")
     start = input("Type in the number next to the selected option: ")
     if start == "1":
         past_earthquake_option()
     elif start == "2":
         recent_sig_option()
+    elif start == "3":
+        exit_app()
+
+def exit_app():
+    print("Thanks for visiting, goodbye!")
 
 def past_earthquake_option():
     print("Input your city, state, or country (if outside the US) to search for past earthquakes, ")
     location = input("or input 'back' to return to the main menu: ")
     if location == '2':
-        options()
-    df = pd.read_csv("r_quakes.csv")
+        start()
+    df = pd.read_csv("quake_data.csv")
     region_df = df.loc[df['region']==location]
     if len(region_df) > 0:
         print(region_df.head())
@@ -44,11 +49,11 @@ def past_earthquake_option():
         if next_action == "1":
             past_earthquake_option()
         else:
-            options()
+            start()
 
 
 def recent_sig_option():
-    df = pd.read_csv("r_quakes.csv")
+    df = pd.read_csv("quake_data.csv")
     start_date = (datetime.datetime.now() - datetime.timedelta(30)).date()
     thirty_days = df[(df['date']> str(start_date))]
     print("There were",len(thirty_days), "earthquakes of over 6.5 magnitude within the last thirty days.")
@@ -56,7 +61,7 @@ def recent_sig_option():
     earthquake_rough_details(thirty_days, 0, None)
 
 
-def earthquake_rough_details(df, criteria, location):
+def earthquake_rough_details(df, criteria, location = None):
     if criteria == 0:
         print("Here is some information about those earthquakes")
         print(" ")
@@ -66,14 +71,57 @@ def earthquake_rough_details(df, criteria, location):
         print(row+1,'. Date:',df.iloc[row]['date'],'Magnitude:',df.iloc[row]['magnitude'], "Location:", df.iloc[row]['place'])
     print(" ")
     print("Would you like to learn more about any of these earthquakes?")
-    print("Enter the number next to the earthquake to get more information about that specific event, or "
-          "enter 'back' to return to the main menu.")
+    next_step = input("Enter the number next to the earthquake to get more information about that specific event, or "
+          "enter 'back' to return to the main menu: ")
+    if next_step == "back":
+        start()
+    else:
+        row = int(next_step)-1
+        earthquake_in_depth(df, row, criteria)
 
-    #add user input
+def call_map_microservice(df, row):
+    lat = df.iloc[row]['latitude']
+    long = df.iloc[row]['longitude']
 
-def earthquake_in_depth(quake):
+    #call map microserve with coordinates. Save link to map page
 
-    pass
+def call_wiki_microservice(df, row):
+    city = df.iloc[row]['city']
+    region = df.iloc[row]['region']
+    if city != region:
+        ans = os.system('/Users/ascio/anaconda3/python.exe wiki_api_requests.py' "Arcata, Calfornia" "Geology")
+    else:
+        ans = os.system('/Users/ascio/anaconda3/python.exe wiki_api_requests.py' "Arcata, Calfornia" "Geology")
+
+
+def earthquake_in_depth(df, row, criteria):
+    tsunami = 'No'
+    if df.iloc[row]['tsunami'] == 1:
+        tsunami = 'Yes'
+    print('Here are some further details: ')
+    print("Earthquake date:", df.iloc[row]['date'])
+    print("Earthquake location:", df.iloc[row]['place'])
+    print("Earthquake magnitude:", df.iloc[row]['magnitude'])
+    print("Earthquake intensity:", df.iloc[row]['intensity'])
+    print("Depth at which the earthquake began to rupture (in kilometers):", df.iloc[row]['depth_km'])
+    print("Significance (scale of 0 to 1000):", df.iloc[row]['significance'])
+    print("Tsunami warning?:", tsunami)
+    print(" ")
+    print("Links related to this earthquake:")
+    print("USGS event page:", df.iloc[row]['url'])
+    print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE")
+    print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE")
+    print(" ")
+    print("Information about the Geology of the area, sourced from wikipedia:", "FILL IN WITH WIKI MICROSERVICE")
+
+    next_action = input("Enter 1 to go back to queried list of earthquakes, 2 to return to the start menu, 3 to exit the app")
+    if next_action == "3":
+        exit_app()
+    if next_action == "2":
+        earthquake_rough_details(df, criteria)
+    else:
+        start()
+
 
 def earthquake_map():
     pass
@@ -85,5 +133,10 @@ def earthquake_news():
     pass
 
 
-options()
+start()
 
+
+
+#Thoughts:
+#Add a resource page for understanding magnitude vs. intensity:
+#https://www.usgs.gov/programs/earthquake-hazards/earthquake-magnitude-energy-release-and-shaking-intensity
