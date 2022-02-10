@@ -8,7 +8,7 @@ import datetime
 import regex as re
 import unidecode as unidecode
 
-with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1970-01-01&endtime=2022-02-03&minmagnitude=6.5") as response:
+with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1970-01-01&endtime=2022-02-09&minmagnitude=6.5") as response:
     source = response.read()
     sig_quakes = json.loads(source) #read in data
 
@@ -94,5 +94,5 @@ feature_dict= {'city':city_list, 'region':region_list,'magnitude':list_mag, 'url
 
 #convert dictionary to a dataframe to a csv
 df = pd.DataFrame.from_dict(feature_dict, orient="columns")
-df.to_csv('r_quakes.csv', index=False) #no indexing
+df.to_csv('quake_data.csv', index=False) #no indexing
 
