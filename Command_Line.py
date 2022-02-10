@@ -33,16 +33,16 @@ def exit_app():
 def past_earthquake_option():
     print("Input your city, state, or country (if outside the US) to search for past earthquakes, ")
     location = input("or input 'back' to return to the main menu: ")
-    if location == '2':
+    if location == 'back':
         start()
     df = pd.read_csv("quake_data.csv")
     region_df = df.loc[df['region']==location]
     if len(region_df) > 0:
-        print(region_df.head())
+        earthquake_rough_details(region_df, 1, location)
     elif len(region_df) == 0:
         city_df = df.loc[df['city']==location]
         if len(city_df)>0:
-            print(city_df.head())
+            earthquake_rough_details(city_df, 1, location)
     else:
         print("There have been no recorded earthquakes greater than 6.5 magnitude in ",location," since the year 1970")
         next_action = input("Enter a 1 to enter a different location, enter 'back' to return to the main menu: ")
@@ -77,7 +77,7 @@ def earthquake_rough_details(df, criteria, location = None):
         start()
     else:
         row = int(next_step)-1
-        earthquake_in_depth(df, row, criteria)
+        earthquake_in_depth(df, row, criteria, location)
 
 def call_map_microservice(df, row):
     lat = df.iloc[row]['latitude']
@@ -85,19 +85,22 @@ def call_map_microservice(df, row):
 
     #call map microserve with coordinates. Save link to map page
 
+
 def call_wiki_microservice(df, row):
+    import subprocess
     city = df.iloc[row]['city']
     region = df.iloc[row]['region']
     if city != region:
-        ans = os.system('/Users/ascio/anaconda3/python.exe wiki_api_requests.py' "Arcata, Calfornia" "Geology")
+        place = ", ".join([city, region])
+        ans = subprocess.run(['python', 'wiki_api_requests.py', place, 'Geology'])
     else:
-        ans = os.system('/Users/ascio/anaconda3/python.exe wiki_api_requests.py' "Arcata, Calfornia" "Geology")
+        ans = subprocess.run[('python', 'wiki_api_requests.py', region, 'Geology')]
 
-
-def earthquake_in_depth(df, row, criteria):
+def earthquake_in_depth(df, row, criteria, location = None):
     tsunami = 'No'
     if df.iloc[row]['tsunami'] == 1:
         tsunami = 'Yes'
+    print(" ")
     print('Here are some further details: ')
     print("Earthquake date:", df.iloc[row]['date'])
     print("Earthquake location:", df.iloc[row]['place'])
@@ -112,22 +115,15 @@ def earthquake_in_depth(df, row, criteria):
     print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE")
     print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE")
     print(" ")
-    print("Information about the Geology of the area, sourced from wikipedia:", "FILL IN WITH WIKI MICROSERVICE")
+    print("Here is some information about the nearest town or region, sourced from wikipedia:")
+    call_wiki_microservice(df, row)
 
-    next_action = input("Enter 1 to go back to queried list of earthquakes, 2 to return to the start menu, 3 to exit the app")
-    if next_action == "3":
-        exit_app()
-    if next_action == "2":
-        earthquake_rough_details(df, criteria)
+    next_action = input("Enter 1 to go back to queried list of earthquakes, 2 to return to the start menu: ")
+    if next_action == "1":
+        earthquake_rough_details(df, criteria, location)
     else:
         start()
 
-
-def earthquake_map():
-    pass
-
-def location_wiki():
-    pass
 
 def earthquake_news():
     pass
