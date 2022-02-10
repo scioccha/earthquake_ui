@@ -82,9 +82,16 @@ def earthquake_rough_details(df, criteria, location = None):
 def call_map_microservice(df, row):
     lat = df.iloc[row]['latitude']
     long = df.iloc[row]['longitude']
+    placeholder = 'https://www.google.com/maps/@40.8880216,-124.0850301,14z'
+    return placeholder
 
     #call map microserve with coordinates. Save link to map page
 
+def call_news_microservice(df, row):
+    data = df.iloc[row]['date']
+    location = df.iloc[row]['place']
+    placeholder = 'https://www.google.com/search?q=earthquakes'
+    return placeholder
 
 def call_wiki_microservice(df, row):
     import subprocess
@@ -112,8 +119,10 @@ def earthquake_in_depth(df, row, criteria, location = None):
     print(" ")
     print("Links related to this earthquake:")
     print("USGS event page:", df.iloc[row]['url'])
-    print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE")
-    print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE")
+    map = call_map_microservice(df, row)
+    news = call_news_microservice(df, row)
+    print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE", "Fake data placeholder: ", map)
+    print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE", "Fake data link: ",news )
     print(" ")
     print("Here is some information about the nearest town or region, sourced from wikipedia:")
     call_wiki_microservice(df, row)
@@ -125,12 +134,8 @@ def earthquake_in_depth(df, row, criteria, location = None):
         start()
 
 
-def earthquake_news():
-    pass
-
-
-start()
-
+if __name__ == '__main__':
+    start()
 
 
 #Thoughts:
