@@ -7,7 +7,7 @@ import pandas as pd
 import datetime
 import os
 
-#os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
+os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
 
 print("Welcome to the Earthquake History. We are a database containing information "
       "about all significant (> 6.5 magnitude) earthquakes since 1970")
@@ -107,6 +107,8 @@ def earthquake_in_depth(df, row, criteria, location = None):
     tsunami = 'No'
     if df.iloc[row]['tsunami'] == 1:
         tsunami = 'Yes'
+    date = df.iloc[row]['date']
+    thirty_days = (datetime.datetime.now() - datetime.timedelta(30)).date()
     print(" ")
     print('Here are some further details: ')
     print("Earthquake date:", df.iloc[row]['date'])
@@ -122,7 +124,8 @@ def earthquake_in_depth(df, row, criteria, location = None):
     map = call_map_microservice(df, row)
     news = call_news_microservice(df, row)
     print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE", "Fake data placeholder: ", map)
-    print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE", "Fake data link: ",news )
+    if date > str(thirty_days):
+        print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE", "Fake data link: ",news )
     print(" ")
     print("Here is some information about the nearest town or region, sourced from wikipedia:")
     call_wiki_microservice(df, row)

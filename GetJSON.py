@@ -8,7 +8,7 @@ import datetime
 import regex as re
 import unidecode as unidecode
 
-with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1970-01-01&endtime=2022-02-09&minmagnitude=6.5") as response:
+with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1970-01-01&endtime=2022-02-20&minmagnitude=6.5") as response:
     source = response.read()
     sig_quakes = json.loads(source) #read in data
 
@@ -57,24 +57,36 @@ add_geometry_data(quake_features)
 city_list=[]
 region_list=[]
 for place in list_place:
-    x= place.split('of',) # location is always after "of" in the string
-    y = x[-1]
-    z = y.split(',',)#city and region are separated by a comma
-    city_regex = re.sub(r"[^\w ]",' ', z[0]) #remove all special characters
-    city_final = str.lstrip(city_regex) #remove beginning space
-    city_final2 = unidecode.unidecode(city_final)
-    region_regex = re.sub(r"[^\w ]",' ', z[-1]) #do the same for region
-    region_final = str.lstrip(region_regex)
-    city_list.append(str.rstrip(city_final2)) #remove any end spaces and add to list
-    region_list.append(str.rstrip(region_final))
+    try:
+        x= place.split('of',) # location is always after "of" in the string
+        y = x[-1]
+        z = y.split(',',)#city and region are separated by a comma
+        city_regex = re.sub(r"[^\w ]",' ', z[0]) #remove all special characters
+        city_final = str.lstrip(city_regex) #remove beginning space
+        city_final2 = unidecode.unidecode(city_final)
+        region_regex = re.sub(r"[^\w ]",' ', z[-1]) #do the same for region
+        region_final = str.lstrip(region_regex)
+        city_list.append(str.rstrip(city_final2)) #remove any end spaces and add to list
+        region_list.append(str.rstrip(region_final))
+    except AttributeError:
+        city = str(place)
+        city_regex = re.sub(r"[^\w ]", ' ', city)  # remove all special characters
+        city_final = str.lstrip(city_regex)
+        city_final2 = unidecode.unidecode(city_final)
+        city_list.append(str(city_final2))
 
-city_list = [re.sub(r"\s+", '-', file) for file in city_list] #replace spaces with dashes
-region_list = [re.sub(r"\s+", '-', file) for file in region_list] #replace spaces with dashes
+        region_list.append(str(place))
 
-region_list = [re.sub(r"-region", '', file) for file in region_list] #fix naming issues in regions
+
+
+#city_list = [re.sub(r"\s+", '-', file) for file in city_list] #replace spaces with dashes
+#region_list = [re.sub(r"\s+", '-', file) for file in region_list] #replace spaces with dashes
+
+region_list = [re.sub(r"region", '', file) for file in region_list] #fix naming issues in regions
 region_list = [re.sub(r"(\w+) *-Peru", 'Peru', file) for file in region_list]
 region_list = [re.sub(r"(\w+) *-Alaska", 'Alaska', file) for file in region_list]
 
+city_list = [re.sub(r"region", '', file) for file in city_list]
 city_list = [str(i or None) for i in city_list] #replace empty city names with None
 
 
