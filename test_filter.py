@@ -5,27 +5,29 @@ import datetime
 df = pd.read_csv("quake_data.csv")
 
 one= df.loc[df['url']=='https://earthquake.usgs.gov/earthquakes/eventpage/us7000glex']
+print(one)
 
 s_date = (one['date'])
 teststart = s_date.to_string()
+print(teststart)
 
 import pandas as pd
-enddate = pd.to_datetime(s_date) + pd.DateOffset(days=5)
+enddate = pd.to_datetime(s_date) + pd.DateOffset(days=2)
 
-print(s_date)
 newend = enddate.dt.strftime('%Y-%m-%d')
 testend = newend.to_string()
 
+print(enddate)
 
 import json
 
 
-#print(new_data[0]['title'], new_data[0]['url'])
+#FIGURE OUT THE 0s IN THE MONTH
 
 import subprocess
-#subprocess.run(['python', 'news_test.py', "2022-02-15", "2022-02-18", "earthquake the Fiji Islands"])
+#subprocess.run(['python', 'news_test.py', "2022-02-16", "2022-02-18", "earthquake the Fiji Islands"])
 
-subprocess.run(['python', 'news_test.py', teststart, testend, 'earthquake Polis Cyprus'])
+subprocess.run(['python', 'news_test.py', "2022-02-16", testend, 'earthquake the Fiji Islands'])
 
 def test_text():
     with open('news.txt') as f:
