@@ -98,7 +98,7 @@ for t in list_datetime:
     date_list.append(date)
 
 date_list = [i[0] for i in date_list] #remove additional brackets from date list
-date_list = [re.sub(r"\b0","", file) for file in date_list] #remove leading zeros
+#date_list = [re.sub(r"\b0","", file) for file in date_list] #remove leading zeros
 
 feature_dict= {'city':city_list, 'region':region_list,'magnitude':list_mag, 'url': list_url, 'place': list_place,
        'date':date_list, 'intensity': list_intensity, 'significance': list_sig, 'tsunami': list_tsunami,
