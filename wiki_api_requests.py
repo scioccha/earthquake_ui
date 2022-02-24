@@ -1,6 +1,6 @@
 import wikipediaapi
 
-def wiki_connect(search_term, section, subsection = None):
+def wiki_connect(search_term, section):
     """
     Takes as arguments a wikipedia search term, section and subsection (optional)
     and returns the paragraph of information in that section. If the page does not exist, returns an
@@ -10,10 +10,6 @@ def wiki_connect(search_term, section, subsection = None):
     page_py = wiki_wiki.page(search_term)
     if page_py.exists():
         for s in page_py.sections:
-            if subsection is not None:  #if a subsection was specified, search within section
-                for sub in s.sections:
-                    if sub.title == subsection:
-                        return sub.text
 
             if s.title == section: #if not subsection was specified
                 return s.text
