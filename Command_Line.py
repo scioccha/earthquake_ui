@@ -88,8 +88,11 @@ def call_map_microservice(df, row):
     #call map microserve with coordinates. Save link to map page
 
 def call_news_microservice(df, row):
-    data = df.iloc[row]['date']
+    start_date = df.iloc[row]['date']
+    end_date = ((pd.to_datetime(start_date) + pd.DateOffset(2)).date()).strftime('%Y-%m-%d')
     location = df.iloc[row]['place']
+    search_term =
+
     placeholder = 'https://www.google.com/search?q=earthquakes'
     return placeholder
 
