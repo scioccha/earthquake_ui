@@ -89,6 +89,7 @@ def call_map_microservice(df, row):
 
     #call map microserve with coordinates. Save link to map page
 
+
 def call_news_microservice(df, row):
     start_date = df.iloc[row]['date']
     end_date = ((pd.to_datetime(start_date) + pd.DateOffset(2)).date()).strftime('%Y-%m-%d')
@@ -97,9 +98,10 @@ def call_news_microservice(df, row):
     if city != region:
         search_term = "earthquake " + df.iloc[row]['city'] + " " + df.iloc[row]['region']
     else:
-        search_term = "earthquake" + df.iloc[row]['region']
-
+        search_term = "earthquake " + df.iloc[row]['region']
     subprocess.run(['python', 'news_test.py', start_date, end_date, search_term])
+
+def read_news():
     with open('news.txt') as f:
         raw_data = json.load(f)
         if raw_data['totalResults'] == 0:
@@ -121,7 +123,7 @@ def call_wiki_microservice(df, row):
         place = ", ".join([city, region])
         ans = subprocess.run(['python', 'wiki_api_requests.py', place, 'Geology'])
     else:
-        ans = subprocess.run[('python', 'wiki_api_requests.py', region, 'Geology')]
+        ans = subprocess.run(['python', 'wiki_api_requests.py', region, 'Geology'])
 
 def earthquake_in_depth(df, row, criteria, location = None):
     tsunami = 'No'
@@ -141,15 +143,16 @@ def earthquake_in_depth(df, row, criteria, location = None):
     print(" ")
     print("Links related to this earthquake:")
     print("USGS event page:", df.iloc[row]['url'])
+
     map = call_map_microservice(df, row)
-    news = call_news_microservice(df, row)
     print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE", "Fake data placeholder: ", map)
     if date > str(thirty_days):
-        print("News articles related to this earthquake: ", "FILL IN WITH NEWS MICROSERVICE", "Fake data link: ",news )
+        print("News articles related to this earthquake: ")
+        call_news_microservice(df, row)
+        read_news()
     print(" ")
     print("Here is some information about the nearest town or region, sourced from wikipedia:")
     call_wiki_microservice(df, row)
-
     next_action = input("Enter 1 to go back to queried list of earthquakes, 2 to return to the start menu: ")
     if next_action == "1":
         earthquake_rough_details(df, criteria, location)
