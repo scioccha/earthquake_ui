@@ -6,6 +6,8 @@
 import pandas as pd
 import datetime
 import os
+import subprocess
+import json
 
 os.system('/Users/ascio/anaconda3/python.exe GetJSON.py')
 
@@ -90,14 +92,29 @@ def call_map_microservice(df, row):
 def call_news_microservice(df, row):
     start_date = df.iloc[row]['date']
     end_date = ((pd.to_datetime(start_date) + pd.DateOffset(2)).date()).strftime('%Y-%m-%d')
-    location = df.iloc[row]['place']
-    search_term =
+    city = df.iloc[row]['city']
+    region = df.iloc[row]['region']
+    if city != region:
+        search_term = "earthquake " + df.iloc[row]['city'] + " " + df.iloc[row]['region']
+    else:
+        search_term = "earthquake" + df.iloc[row]['region']
 
-    placeholder = 'https://www.google.com/search?q=earthquakes'
-    return placeholder
+    subprocess.run(['python', 'news_test.py', start_date, end_date, search_term])
+    with open('news.txt') as f:
+        raw_data = json.load(f)
+        if raw_data['totalResults'] == 0:
+            print("No recent news articles for this earthquake.")
+            return
+
+        new_data = raw_data['articles']
+        for i in range(3):
+            try:
+                print(new_data[i]['title'], new_data[i]['url'])
+            except IndexError:
+                return
+
 
 def call_wiki_microservice(df, row):
-    import subprocess
     city = df.iloc[row]['city']
     region = df.iloc[row]['region']
     if city != region:
