@@ -82,10 +82,11 @@ def earthquake_rough_details(df, criteria, location = None):
         earthquake_in_depth(df, row, criteria, location)
 
 def call_map_microservice(df, row):
-    lat = df.iloc[row]['latitude']
-    long = df.iloc[row]['longitude']
-    placeholder = 'https://www.google.com/maps/@40.8880216,-124.0850301,14z'
-    return placeholder
+    lat = str(df.iloc[row]['latitude'])
+    long = str(df.iloc[row]['longitude'])
+    localhost = 'http://localhost:5000/microservice/map/'
+    url = localhost+lat+'&'+long
+    return url
 
     #call map microserve with coordinates. Save link to map page
 
@@ -145,7 +146,7 @@ def earthquake_in_depth(df, row, criteria, location = None):
     print("USGS event page:", df.iloc[row]['url'])
 
     map = call_map_microservice(df, row)
-    print("Google Map of earthquake location:", "FILL IN WITH MAP MICROSERVICE", "Fake data placeholder: ", map)
+    print("Map of earthquake location:", map)
     if date > str(thirty_days):
         print("News articles related to this earthquake: ")
         call_news_microservice(df, row)
