@@ -161,6 +161,7 @@ def earthquake_in_depth(df, row, criteria, location = None):
         start()
 
 
+
 if __name__ == '__main__':
     start()
 
