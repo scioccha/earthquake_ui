@@ -95,6 +95,7 @@ for t in list_datetime:
     date = datetime.datetime.fromtimestamp(t/1000.0, tz=datetime.timezone.utc)
     full_date = date.strftime('%Y-%m-%d %H:%M:%S')
     date = re.findall(r'\d{4}-\d{2}-\d{2}', full_date) #separate date from time
+    #date_list.append(full_date)
     date_list.append(date)
 
 date_list = [i[0] for i in date_list] #remove additional brackets from date list
