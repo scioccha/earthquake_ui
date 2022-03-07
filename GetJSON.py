@@ -20,10 +20,10 @@ with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=ge
 #Define lists to store relevant earthquake data
 list_url = []
 list_mag = []
-list_place = []
 list_datetime = []
 list_intensity = []
 list_sig = []
+list_place = []
 list_tsunami = []
 latitude_list = []
 longitude_list = []
@@ -44,10 +44,10 @@ def add_feature_data(source):
     for i in source:
         list_url.append([i][0]["properties"]["url"])
         list_mag.append([i][0]["properties"]["mag"])
-        list_place.append([i][0]["properties"]["place"])
         list_datetime.append([i][0]["properties"]["time"])
         list_intensity.append([i][0]["properties"]["mmi"])
         list_sig.append([i][0]["properties"]["sig"])
+        list_place.append([i][0]["properties"]["place"])
         list_tsunami.append([i][0]["properties"]["tsunami"])
 
 def add_geometry_data(source):
@@ -61,7 +61,7 @@ def add_geometry_data(source):
         longitude_list.append([i][0]["geometry"]["coordinates"][0])
         depth_list.append([i][0]["geometry"]["coordinates"][2])
 
-def remove_white_space_special_chars(location):
+def remove_extra_chars(location):
     """
     Takes a string location and removes leading whitespace, a 'region' tag, and all special
     characters (using the unidecode module). Returns the cleaned string.
@@ -71,25 +71,24 @@ def remove_white_space_special_chars(location):
     return unidecode.unidecode(remove_region)
 
 
-def extract_city_and_region(place_list):
+def extract_city_and_region(places):
     """
     Takes the earthquake place list, which is a list of strings that contain the location of the
     earthquake, splits them into separate strings for city and region, removes additional white space
     and special characters, and adds them to the city and region lists.
     """
-    for place in place_list:
+    for location in places:
         #In 99% of cases, earthquake location is located after 'of' in the string.
         #Try splitting this way, then use remove_white_space method to further clean
         try:
-            y= place.split('of',)[-1]
-            z = y.split(',',) #city and region are separated by a comma
-            city,region = remove_white_space_special_chars(z[0]), remove_white_space_special_chars(z[-1])
+            city_region = (location.split('of',)[-1]).split(',')
+            city,region = remove_extra_chars(city_region[0]), remove_extra_chars(city_region[-1])
             city_list.append(city)
             region_list.append(region)
         #If there is no 'of' in place (which will cause an AttributeError) then no splitting needs to occur
         except AttributeError:
-            city = remove_white_space_special_chars(str(place))
-            city_list.append(city), region_list.append(str(place))
+            city = remove_extra_chars(str(location))
+            city_list.append(city), region_list.append(str(location))
 
 def convert_date_time(milliseconds):
     date = datetime.datetime.fromtimestamp(milliseconds/1000.0, tz=datetime.timezone.utc).strftime('%Y-%m-%d')
