@@ -17,22 +17,24 @@ with request.urlopen("https://earthquake.usgs.gov/fdsnws/event/1/query?format=ge
     sig_quakes = json.loads(source) #read in data
     quake_features = sig_quakes["features"] #all relevant data contained within "features" list
 
-#Define lists to store relevant earthquake data
-list_url = []
-list_mag = []
-list_datetime = []
-list_intensity = []
-list_sig = []
-list_place = []
-list_tsunami = []
-latitude_list = []
-longitude_list = []
-depth_list = []
+#Define attribute lists to store relevant earthquake data
+url_list, place_list = [], []
+mag_list, intensity_list, significance_list = [], [], []
+tsunami_list, depth_list = [], []
+latitude_list, longitude_list = [], []
 
 #city and region list will be extracted from "place" data. Date list will be extracted from datetime
-city_list=[]
-region_list=[]
-date_list=[]
+city_list, region_list, date_list=[], [], []
+
+
+def convert_date_time(milliseconds):
+    """
+    Takes date object (string) which records earthquake time in milliseconds from the epoch and
+    converts it to a UTC date in the %Y-%m-%d format
+    """
+    date = datetime.datetime.fromtimestamp(milliseconds/1000.0, tz=datetime.timezone.utc).strftime('%Y-%m-%d')
+    return date
+
 
 def add_feature_data(source):
     """
@@ -42,13 +44,17 @@ def add_feature_data(source):
     https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
     """
     for i in source:
-        list_url.append([i][0]["properties"]["url"])
-        list_mag.append([i][0]["properties"]["mag"])
-        list_datetime.append([i][0]["properties"]["time"])
-        list_intensity.append([i][0]["properties"]["mmi"])
-        list_sig.append([i][0]["properties"]["sig"])
-        list_place.append([i][0]["properties"]["place"])
-        list_tsunami.append([i][0]["properties"]["tsunami"])
+        #the following attributes do not need to be edited, and are added straight to attribute lists
+        url_list.append([i][0]["properties"]["url"])
+        mag_list.append([i][0]["properties"]["mag"])
+        intensity_list.append([i][0]["properties"]["mmi"])
+        significance_list.append([i][0]["properties"]["sig"])
+        place_list.append([i][0]["properties"]["place"])
+        tsunami_list.append([i][0]["properties"]["tsunami"])
+
+        #date attribute needs to be converted to a UTC date (from milliseconds past the epoch)
+        date_milliseconds = [i][0]["properties"]["time"]
+        date_list.append(convert_date_time(date_milliseconds))
 
 def add_geometry_data(source):
     """
@@ -90,26 +96,15 @@ def extract_city_and_region(places):
             city = remove_extra_chars(str(location))
             city_list.append(city), region_list.append(str(location))
 
-def convert_date_time(milliseconds):
-    date = datetime.datetime.fromtimestamp(milliseconds/1000.0, tz=datetime.timezone.utc).strftime('%Y-%m-%d')
-    return date
 
-def extract_date(dates):
-    for time in dates:
-        date = convert_date_time(time)
-        date_list.append(date)
-
-
-
-#Apply feature and geometry data functions to the quake features data:
+#Apply feature and geometry data functions to the quake data:
 add_feature_data(quake_features)
 add_geometry_data(quake_features)
-extract_city_and_region(list_place)
-extract_date(list_datetime)
+extract_city_and_region(place_list)
 
-
-feature_dict= {'city':city_list, 'region':region_list,'magnitude':list_mag, 'url': list_url, 'place': list_place,
-       'date':date_list, 'intensity': list_intensity, 'significance': list_sig, 'tsunami': list_tsunami,
+#Create feature dictionary
+feature_dict= {'city':city_list, 'region':region_list,'magnitude':mag_list, 'url': url_list, 'place': place_list,
+       'date':date_list, 'intensity': intensity_list, 'significance': significance_list, 'tsunami': tsunami_list,
                "latitude": latitude_list,"longitude" : longitude_list, "depth_km": depth_list}
 
 #convert dictionary to a dataframe to a csv
