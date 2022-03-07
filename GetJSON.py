@@ -29,9 +29,10 @@ latitude_list = []
 longitude_list = []
 depth_list = []
 
-#city and region list will be extracted from "place" data
+#city and region list will be extracted from "place" data. Date list will be extracted from datetime
 city_list=[]
 region_list=[]
+date_list=[]
 
 def add_feature_data(source):
     """
@@ -61,38 +62,51 @@ def add_geometry_data(source):
         depth_list.append([i][0]["geometry"]["coordinates"][2])
 
 def remove_white_space_special_chars(location):
+    """
+    Takes a string location and removes leading whitespace, a 'region' tag, and all special
+    characters (using the unidecode module). Returns the cleaned string.
+    """
     no_white_space = str.lstrip(re.sub(r"[^\w ]",' ', location))
     remove_region = re.sub(r"region",'',no_white_space)
     return unidecode.unidecode(remove_region)
 
 
 def extract_city_and_region(place_list):
+    """
+    Takes the earthquake place list, which is a list of strings that contain the location of the
+    earthquake, splits them into separate strings for city and region, removes additional white space
+    and special characters, and adds them to the city and region lists.
+    """
     for place in place_list:
+        #In 99% of cases, earthquake location is located after 'of' in the string.
+        #Try splitting this way, then use remove_white_space method to further clean
         try:
-            y= place.split('of',)[-1] # location is always after "of" in the string
+            y= place.split('of',)[-1]
             z = y.split(',',) #city and region are separated by a comma
             city,region = remove_white_space_special_chars(z[0]), remove_white_space_special_chars(z[-1])
             city_list.append(city)
             region_list.append(region)
+        #If there is no 'of' in place (which will cause an AttributeError) then no splitting needs to occur
         except AttributeError:
             city = remove_white_space_special_chars(str(place))
             city_list.append(city), region_list.append(str(place))
+
+def convert_date_time(milliseconds):
+    date = datetime.datetime.fromtimestamp(milliseconds/1000.0, tz=datetime.timezone.utc).strftime('%Y-%m-%d')
+    return date
+
+def extract_date(dates):
+    for time in dates:
+        date = convert_date_time(time)
+        date_list.append(date)
+
+
 
 #Apply feature and geometry data functions to the quake features data:
 add_feature_data(quake_features)
 add_geometry_data(quake_features)
 extract_city_and_region(list_place)
-
-
-
-date_list = []
-for t in list_datetime:
-    date = datetime.datetime.fromtimestamp(t/1000.0, tz=datetime.timezone.utc)
-    full_date = date.strftime('%Y-%m-%d %H:%M:%S')
-    date = re.findall(r'\d{4}-\d{2}-\d{2}', full_date) #separate date from time
-    date_list.append(date)
-
-date_list = [i[0] for i in date_list] #remove additional brackets from date list
+extract_date(list_datetime)
 
 
 feature_dict= {'city':city_list, 'region':region_list,'magnitude':list_mag, 'url': list_url, 'place': list_place,
