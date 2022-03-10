@@ -1,0 +1,224 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 10vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+/* Header Styles */
+.App-header {
+  background-color: #282c34;
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-header-logo-container {
+  width: 20%;
+}
+
+.App-header-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 60%;
+}
+
+#header-title {
+  color: white;
+  text-decoration: none;
+}
+
+.App-header-link-container {
+  width: 20%;
+}
+
+.App-link {
+  color: #61dafb; 
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Description Styles */
+.description-container {
+  padding: 5% 20% 0% 20%;
+}
+
+.description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+/* Search Bar Styles */
+.search-component {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-title {
+  width: 100%;
+}
+
+.search-form {
+  width: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-input {
+  width: 70%;
+  border: none;
+  border-bottom: 1px solid black;
+  padding: 10px;
+}
+
+.form-submit {
+  width: 25%;
+  padding: 10px;
+  border: none;
+  background: #282c34;
+  color: white;
+}
+
+/* Bike Rack Map Styles */
+.refresh-button {
+  margin-bottom: 20px;
+  
+}
+.bike-map {
+  width: 90%;
+  height: 600px;
+  margin: auto;
+}
+
+.ol-zoom {
+  display: flex;
+  flex-direction: column;
+  padding: 1% 1%;
+}
+
+.ol-zoom button {
+  width: 25px;
+  height: 25px;
+  margin-bottom: 2px;
+  background: rgba(0, 60, 136,0.5);
+  border-radius: 2px 2px 0 0;
+  border: 1px solid white;
+  color: white;
+  font-weight: bold;
+}
+
+.ol-rotate {
+  display: none;
+}
+
+.ol-attribution {
+  position: absolute;
+  top: 92%;
+}
+
+.ol-attribution button {
+  display: none;
+}
+
+.ol-attribution ul li{
+  list-style: none;
+  font-size: 12px;
+}
+
+/* Graph of bike racks Style */
+.team-microservice-container {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.team-microservice {
+  background: #282c34;
+  padding: 20px 40px;
+  color: white;
+  border: 1px black solid;
+  font-size: 16px;
+}
+
+.team-microservice:hover {
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+/* Add New Bike Form */
+.add-form-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 50px;
+}
+
+.add-form {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+}
+
+.form-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40px;
+}
+
+.form-label {
+  width: 30%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.form-input {
+  width: 60%;
+}
+
+.form-text {
+  width: 60%;
+}
+
+.form-submit:hover {
+  color: #282c34;
+  background: white;
+  border: 1px solid #282c34;
+  cursor: pointer;
+}
+
+/* Microservices Map */
+.microservice-map {
+  width: 90%;
+  height: 600px;
+  margin: auto;
+}
